@@ -1,0 +1,13 @@
+# Time-stamp: <[Makevars.win] by DSB Mit 15/12/2010 13:38 (CET)>
+
+# set windows flags
+OPENMP_CFLAGS=
+LIBS=
+
+# they are used here:
+PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(OPENMP_CFLAGS) $(LIBS)  
+PKG_CXXFLAGS = -I. $(OPENMP_CFLAGS)
+
+# Local Variables:
+# mode: makefile
+# End:

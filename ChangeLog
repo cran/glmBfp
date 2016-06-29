@@ -1,0 +1,350 @@
+2015-07-02 Isaac Gravestock <isaac.gravestock@uzh.ch>
+
+ * Fixed comilation bug due to reusing memory and constant vectors.
+ * Introduced hack to stop clashing of lapack definitions
+
+2013-11-07  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* start adaptations for R version 3.0.2
+
+2013-08-26  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* R/getMarginalZ.R: introduce verbose option
+
+2013-08-22  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Fixed a bug in sampleGlm which occurred when local empirical
+	Bayes estimation of g was used, on 64bit machines.
+
+2013-07-03  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Add offsets.
+
+2013-04-17  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* R/sampleGlm.R: Fix computation of bfp curves and fixed form
+	covariate coefficients. Before there was a wrong extraction of the
+	coefficients samples from the grand samples matrix. However, the
+	fitted values were correct.
+
+2013-04-16  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* src/sampleGlm.cpp: Fix sampling from Cox model. Before the
+	covariance of the coefficients was wrong.
+
+2013-02-06  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* R/glmBayesMfp.R: Remove default value for "family" to avoid
+	erroneous fitting of Gaussian models when instead a logistic
+	regression is to be performed.
+
+2013-01-24  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Include option "fixedg" to do a model search with fixed g.
+
+2013-01-23  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* R/plotCurveEstimate.R: Mention colors of pointwise (blue) and
+	simultaneous (green) credible intervals in the help page.
+
+2012-12-10  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* R/glmBayesMfp.R: fix bug: order according to survival times when
+	Cox model is requested, otherwise the computed deviances are
+	wrong!!
+
+2012-12-07  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* R/GlmBayesMfp-methods.R: change default for freq in
+	as.data.frame.GlmBayesMfp to FALSE, to not generate error messages
+	on objects resulting from exhaustive model search.
+
+2012-12-04  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Finished inclusion of Cox models.
+
+2012-11-29  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Start developing functions for Cox models.
+
+2012-11-26  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* R/plotCurveEstimate.R: add option to include zeros resulting
+	from models which do not include a covariate in the computations
+	for the curve estimates.
+	Also correct colors.
+
+2012-11-21  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Start adding likelihood ratio statistic based Bayes factors (TBF
+	methodology).
+
+2012-10-24  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* R/GlmBayesMfp-methods.R: correct extraction of Monte Carlo model
+	probability estimates.
+
+	* Add vignette with Pima Indian data set example.
+
+2012-07-26  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Small changes in documentation.
+
+2011-10-07  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* inst/CITATION: Include updated citation info.
+
+2011-07-29  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* various: now the option "higherOrderCorrection" allows the
+	higher order Laplace correction also for other canonical GLMs
+	besides the logistic regression. (And it should speed up the
+	computation, too!)
+
+2011-07-08  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* various: add the "dependent" model prior
+
+2011-06-10  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* R/glmBayesMfp.R: Correctly abort when asked and not "y" or "n"
+	is entered (thanks Alex!)
+
+2011-06-09  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* R/sampleGlm.R: Fix bug in construction of "newDesign" for
+	"predictions" (thanks Alex!)
+
+2011-02-18  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* inst/CITATION: Add citation info.
+
+2010-12-09  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* src/various: remove commented code fragments, e.g. for
+	eighth-order Laplace approximation, which were not used. See the
+	archives for this code.
+
+	* various: Switch from FLENS to RcppArmadillo, because then we can
+	install the package on other machines easily.
+
+2010-08-16  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* src/zdensity.cpp: Higher-order correction is now O(n^-2) after
+	including two additional terms.
+
+2010-08-03  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* src/sampleGlm.cpp: verbose was falsely initialized with the
+	estimateMargLik value in the Options class; this was corrected.
+
+	* R/sampleBma.R: Always save z samples (even for null / EB)
+
+	* R/plotCurveEstimate.R: Now rug=TRUE works for plotCurveEstimate.
+
+2010-08-02  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* src/zdensity.cpp: If g is numerically zero, we do not longer
+	throw an R error, but a C++ exception which is turned into an NaN
+	value by the catch-block.
+
+2010-07-29  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Included a higher-order correction of the Laplace approximation,
+	which is currently SPECIFIC ONLY FOR BINARY LOGISTIC REGRESSION.
+	It is available through a new option for glmBayesMfp.
+
+2010-07-26  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* R/sampleBma.R: And also here.
+
+	* R/sampleGlm.R: Do not drop dimensions when saving UC
+	coefficients samples.
+
+2010-07-23  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* R/GPrior-classes.R: only warn when the integral of the g-prior
+	density is not equal to	unity instead of producing an error.
+
+2010-07-08  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Further shorten the interval where the mode of z is searched to
+	(-100, 200) because the posterior will usually be very flat and
+	low below -100.
+
+	* Fix a bug in dataStructure.h/Model: Now two models are compared
+	by their parameters if the info is the same. Before, in the
+	exhaustive search functions two model could have the same info and
+	only the first model would be included in the result list.
+
+	* Start including an empirical Bayes option, where g is estimated
+	by maximizing the (approximated) conditional marginal likelihood.
+
+2010-07-05  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Fixed a bug in sampleGlm.cpp where the unnormalized posterior of
+	the high density point was rounded to integer. This lead to almost
+	uniform errors of ILA wrt MCMC marginal likelihoods.
+
+2010-07-02  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* R/sampleGlm.R: extend the functionality to the case with fixed
+	z. This can be useful later on in the empirical Bayes setting!
+	For now it's important for checking the marginal likelihood in the
+	normal distribution case.
+
+2010-06-30  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* R/getNullModelInfo.R: include the 2 * pi constant
+
+2010-06-28  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* R/getNullModelInfo.R: switch back to the Laplace approximation
+	for the computation of the marginal log likelihood of the null
+	model.
+
+2010-05-25  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Remove unnecessary testing code from the package (e.g. the
+	optimization routines, openMP testing etc.). You can find it in
+	the old packages in the archive directory if you need it.
+
+	* Introduce formal class "GlmBayesMfpSamples". Objects of this
+	class are produced by the single and model average sampling
+	functions. The "plotCurveEstimate" function expects this as input.
+
+	* Add model averaging function "sampleBma".
+
+2010-05-20  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Convergence of IWLS is now measured on the coefficients scale,
+	rather than the linear predictor scale. This is faster (because
+	there are fewer coefficients). Non-convergence is treated by
+	issuing a warning message (no R warning, though) in debug mode.
+
+	* IWLS errors etc. are no longer breaking the model sampling, but
+	throw exceptions which are processed. If the error is only
+	occurring at single z values, it is no problem for the
+	optimization algorithm -- it just turns away from these values. If
+	the resulting log marginal likelihood estimate is nevertheless
+	NaN, the model is not included (but the algorithm proceeds) in the
+	model cache.
+
+2010-05-17  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* "linear" is now the default approximation method for the
+	marginal z density, because it always works, does not need long
+	initialization times like the Runuran generators and gives equally
+	good acceptance probabilities (provided the density was explored
+	well enough by the optimization routine).
+
+	* "optimize" is now the default optimization routine, because it
+	is more robust than bfgs (although it is slower, but that is the
+	price).
+
+2010-05-12  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Include the dispersions phi_i correctly in the g-prior matrix
+	(they were not included at all before...) and also the factor c
+	which is determined by the distribution family and the link
+	function. So we want the "generalized g-prior" instead of the
+	usual "linear model g-prior".
+
+2010-04-14  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Fixed some bugs.
+
+	* Added expert options to glmBayesMfp.
+
+2010-03-18  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Add code for the model sampling, because we now want to explore
+	larger model spaces where exhaustive computation of all models is
+	no longer possible.
+
+	* Also use OpenMP to speedup some loops. Adapt makefile to new
+	BLAS/LAPACK situation (we do not need to include ATLAS things any
+	longer, because we now use GotoBLAS2).
+
+2010-03-10  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Use FLENS instead of newmat for better performance.
+
+2010-02-17  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Finalize sampling (better spline approximations for the marginal
+	z density, correct treatment of the null model, ...)
+
+2010-01-05  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Use the new unuran.details function in sampleGlm to avoid
+	another integration of the unnormalized pdf.
+
+2009-12-10  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Start implementing the MCMC sampler for a specific GLM from the
+	list returned by "glmBayesMfp".
+
+2009-11-18  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* First only focus on the new glm methodology in this package, and
+	gradually build it up. So move the hyper-g C code to separate
+	directory (because I already changed some things there) and remove
+	the hyper-g R code. (It is still present in the bfp package of
+	course!) Start with testing of marginal likelihood approximation
+	in small model spaces where we can do exhaustive searches.
+
+2009-10-26  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* branch off this package ("glmBfp"), which shall include
+	(one-parameter) generalized linear models. This will *not* be on
+	R-forge in the first development time, as opposed to the old "bfp"
+	package.
+
+2009-09-30  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Add some documentation to R functions.
+
+	* Clearer structure for src directory, so that all newmat stuff is
+	in a separate directory.
+
+2009-09-29  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Upload to R-forge SVN as package "bfp".
+
+2009-09-21  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* Only allow identical FP degrees for the covariates, to ensure
+	that the SWITCH always works.
+	* Start implementing the new SWITCH move type, which shall guard
+	us against bad mixing in data sets with near-collinear covariates.
+	* Note that the R CMD check warning for the marked UTF8 character
+	is the degree symbol in the labels of the ozone covariates.
+
+2009-09-14  Daniel Sabanés Bové  <daniel.sabanesbove@ifspm.uzh.ch>
+
+	* start cleaning before the next major revisions
+
+2009-02-12  Daniel Sabanes Bove  <daniel.sabanesbove@campus.lmu.de>
+
+	* faster implementation for findModel.
+
+2008-12-26  Daniel Sabanes Bove  <daniel.sabanesbove@campus.lmu.de>
+
+	* test the corrected computation of marginal likelihood (see
+	hyperg.cpp).
+
+2008-11-29  Daniel Sabanes Bove  <daniel.sabanesbove@campus.lmu.de>
+
+	* Added flat model prior option as the default prior specification.
+
+2008-10-24  Daniel Sabanes Bove  <daniel.sabanesbove@campus.lmu.de>
+
+	* first version which is tested for the ozone data.
+
+2008-08-22  Daniel Sabanes Bove  <daniel.sabanesbove@campus.lmu.de>
+
+	* copied everything from original BayesMfp package. This shall be
+	a seperate implementation for the new methodology with
+	hyper-g-prior & Co.
+

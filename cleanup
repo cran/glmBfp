@@ -1,0 +1,7 @@
+#! /bin/sh
+
+#clean up after building
+
+#to resolve a note
+rm src/Makevars
+rm config.log

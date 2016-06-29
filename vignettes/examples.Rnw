@@ -1,0 +1,298 @@
+%%\VignetteIndexEntry{glmBfp: Bayesian fractional polynomials for GLMs} 
+%%\VignetteKeywords{fractional polynomials, Bayesian variable selection, g-prior, hyper-g prior}
+%%\VignettePackage{glmBfp}
+%%\VignetteDepends{MASS,glmBfp}
+
+\documentclass[UKenglish]{scrreprt}
+
+\usepackage[utf8]{inputenc}
+\usepackage[UKenglish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{hyperref}
+\usepackage{url} 
+\usepackage[sumlimits, intlimits, namelimits]{amsmath} % Mathe
+\usepackage{amssymb}            % Symbole
+\usepackage[caption = true]{subfig}
+\usepackage[longnamesfirst,round]{natbib} 
+\usepackage{tikz}  
+\usepackage[nogin]{Sweave} 
+
+
+\begin{document}
+
+\title{Using the package \texttt{glmBfp}:\\ a binary regression example.}
+\author{Daniel Saban\'es Bov\'e}
+\maketitle
+
+This short vignette shall introduce into the usage of the package
+\texttt{glmBfp}. For more information on the methodology, see
+\citet{sabanesbove.held2011}. There you can also find the references for the
+other tools mentioned here.
+
+If you have any questions or critique concerning the package, write an email to
+me:
+\href{mailto:daniel.sabanesbove@ifspm.uzh.ch}{\nolinkurl{daniel.sabanesbove@ifspm.uzh.ch}}. 
+Many thanks in advance! 
+
+\section{Pima Indians diabetes data}
+\label{sec:pima-indi-diab}
+
+We will have a look at the Pima Indians diabetes data, which is available
+in the package \texttt{MASS}:
+
+<<pima-data>>=
+library(MASS)
+pima <- rbind(Pima.tr, Pima.te)
+pima$hasDiabetes <- as.numeric(pima$type == "Yes")
+pima.nObs <- nrow(pima)
+@ 
+
+\paragraph{Setup}
+\label{sec:setup}
+
+
+For $n=\Sexpr{pima.nObs}$ women of Pima Indian heritage, seven possible
+predictors for the presence of diabetes are recorded. We would like to
+investigate with a binary regression, which of them are relevant,
+and what form the statistical association has -- is it a linear effect, or
+rather a nonlinear effect? Here we will model possible nonlinear effects with
+the fractional polynomials. 
+
+First, we need to decide on the prior distributions to use. We are going to use
+the generalised hyper-$g$ priors for GLMs \citep{sabanesbove.held2011}. They are
+automatic and are supposed to yield reasonable results. We only need to specify
+which hyper-prior to put on the factor $g$. One possible choice is the
+Zellner-Siow hyper-prior which says $g \sim \mathrm{IG}(1/2, n/2)$:
+
+<<pima-setup-and-zs>>=
+library(glmBfp)
+
+## define the prior distributions for g which we are going to use:
+prior <- InvGammaGPrior(a=1/2, 
+                        b=pima.nObs/2)
+## (the warning can be ignored)
+@ 
+
+This corresponds to the F1 prior in \citet{sabanesbove.held2011}.
+%
+Another possible choice is the hyper-$g/n$ prior. For this there is no special
+constructor function, instead you can directly specify the log prior density, as
+follows:
+
+<<hyper-g/n>>=
+## You may also use the hyper-g/n prior:
+prior.f2 <- CustomGPrior(logDens=function(g) 
+                         - log(pima.nObs) - 2 * log(1 + g / pima.nObs))
+@ 
+
+\paragraph{Stochastic model search}
+\label{sec:stoch-model-search}
+
+Next, we will do a stochastic search on the (very large) model space to find
+``good'' models. Here we have to decide on the model prior, and in this example
+we use the \texttt{sparse} type which was also used in the paper. We use a
+\texttt{chainlength} of $100$, which is very small but enough for illustration
+purposes (usually one should use at least $10\,000$ as a rule of thumb), and
+save all models (in general \texttt{nModels} is the number of models which are
+saved from all visited models). Finally, we decide that we do not want to use
+OpenMP acceleration (this would parallelise loops over all observations on all
+cores of your processor) and that we want to do higher order correction for the Laplace
+approximations. In order to be able to reproduce the analysis, it is advisable
+to set a seed for the random number generator before starting the stochastic
+search.
+
+<<pima-search>>=
+set.seed(102)
+time.pima <-
+    system.time(models.pima <-
+                glmBayesMfp(type ~ 
+                            bfp(npreg) + 
+                            bfp(glu) + 
+                            bfp(bp) +
+                            bfp(skin) + 
+                            bfp(bmi) + 
+                            bfp(ped) + 
+                            bfp(age),
+                            data=pima,
+                            family=binomial("logit"),
+                            priorSpecs=
+                            list(gPrior=prior,
+                                 modelPrior="sparse"),
+                            nModels=1e3L,
+                            chainlength=1e1L,
+                            method="sampling",
+                            useOpenMP=FALSE,
+                            higherOrderCorrection=TRUE))  
+time.pima
+attr(models.pima, "numVisited")
+@ 
+
+
+Wee see that the search took $\Sexpr{round(time.pima["elapsed"])}$~seconds, and
+\Sexpr{attr(models.pima,"numVisited")}~models were found. Now, if we want to
+have a table of the found models, with their posterior probability, the log
+marginal likelihood, the log prior probability, and the powers for every
+covariate the and the number of times that the sampler encountered that model:
+
+<<pima-top-models>>=
+table.pima <- as.data.frame(models.pima)
+table.pima
+@ 
+
+Note that while \texttt{frequency} refers to the frequency of the models in the
+sampling chain, thus providing a Monte Carlo estimate of the posterior model
+probabilities, \texttt{posterior} refers to the renormalised posterior model
+probabilities. The latter has the advantage that ratios of posterior
+probabilities between any two models are exact, while the former is unbiased
+(but obviously has larger variance).
+
+\paragraph{Inclusion probabilities}
+\label{sec:incl-prob}
+
+The estimated marginal inclusion probabilities for all covariates are also
+saved: 
+
+<<pima-incprobs>>=
+round(attr(models.pima, "inclusionProbs"),2)
+@ 
+
+\paragraph{Sampling model parameters}
+\label{sec:sampl-model-param}
+
+If we now want to look at the estimated covariate effects in the estimated MAP
+model which has the configuration given in the last seven columns of
+\texttt{table.pima}, then we first need to generate parameter samples from that
+model:
+
+<<pima-sampling>>=
+## MCMC settings
+mcmcOptions <- McmcOptions(iterations=1e4L,
+                           burnin=1e3L,
+                           step=2L)
+
+## get samples from the MAP model
+set.seed(634)
+mapSamples <- sampleGlm(models.pima[1L], 
+                        mcmc=mcmcOptions,
+                        useOpenMP=FALSE)
+@ 
+
+With the function \texttt{McmcOptions}, we have defined an S4 object of MCMC
+settings, comprising the number of iterations, the length of the burn-in, the
+thinning step (here save every second iteration), here the acceptance rate was
+$\Sexpr{round(mapSamples[["acceptanceRatio"]],2)}$). Note that you can also get
+predictive samples for new data points via the \texttt{newdata} option of
+\texttt{sampleGlm}. The result \texttt{mapSamples} has the following structure:
+
+<<pima-samples-structure>>=
+str(mapSamples)
+@ 
+
+It is a list with the \texttt{acceptanceRatio} of the Metropolis-Hastings
+proposals, an MCMC estimate for the log marginal likelihood including an
+associated standard error (\texttt{logMargLik}), the \texttt{coefficients}
+samples of the model, and an S4 object \texttt{samples}. This S4 object includes
+the \texttt{fitted} samples on the linear predictor scale (in our case on the
+log Odds Ratio scale), possibly \texttt{predictions} samples, samples of the
+intercept (\texttt{fixed}), samples of $z=\log(g)$, samples of the fractional
+polynomial curves (\texttt{bfpCurves}), coefficients of uncertain but fixed form
+covariates (\texttt{ucCoefs}), the shifts and scales applied to the original
+covariates (\texttt{shiftScaleMax}) and the number of samples
+(\texttt{nSamples}). You can read more details on the results on the help page
+by typing \texttt{?"GlmBayesMfpSamples-class"} in \texttt{R}.
+
+If we wanted to get posterior fitted values on the probability scale, we can use
+the following code:
+<<pima-fitted-values>>=
+mapFit <- rowMeans(plogis(mapSamples$samples@fitted))
+head(mapFit)
+@ 
+%$
+We can also analyse the MCMC output in greater detail by applying the functions
+in the \texttt{coda} package:
+<<pima-coda, fig=TRUE>>=
+library(coda)
+
+coefMcmc <- mcmc(data=t(mapSamples$coefficients),
+                 start=mcmcOptions@burnin + 1,
+                 thin=mcmcOptions@step)
+str(coefMcmc)
+
+## standard summary table for the coefficients:
+summary(coefMcmc)
+autocorr(coefMcmc)
+## etc.
+
+plot(coefMcmc) 
+@ 
+
+<<pima-coda-2, fig=TRUE>>=
+## samples of z:
+zMcmc <- mcmc(data=mapSamples$samples@z,
+              start=mcmcOptions@burnin + 1,
+              thin=mcmcOptions@step)
+plot(zMcmc)
+## etc.
+@ 
+
+\paragraph{Curve estimates}
+\label{sec:curve-estimates}
+
+Now we can use the samples to plot the estimated effects of the MAP model
+covariates, with the \texttt{plotCurveEstimate} function. For example:
+
+<<pima-plot-ex, fig=TRUE>>=
+plotCurveEstimate(termName="skin",
+                  samples=mapSamples$samples)
+@ 
+
+\paragraph{Model averaging}
+\label{sec:model-averaging}
+
+Model averaging works in principle similar to sampling from a single model, but
+multiple model configurations are supplied and their respective log posterior
+probabilities. For example, if we wanted to average the top three models found, we
+would do the following:
+
+<<pima-model-averaging>>=
+set.seed(312)
+bmaSamples <- 
+    sampleBma(models.pima[1:3],
+              mcmc=mcmcOptions,
+              useOpenMP=FALSE,
+              nMargLikSamples=1000)
+
+## look at the list element names:
+names(bmaSamples)
+
+## now we can see how close the MCMC estimates ("margLikEstimate")
+## are to the ILA estimates ("logMargLik") of the log marginal likelihood:
+bmaSamples$modelData[, c("logMargLik", "margLikEstimate")]
+
+## the "samples" list is again of class "GlmBayesMfpSamples":
+class(bmaSamples$samples)
+@ 
+
+Then internally, first the models are sampled, and for each sampled model so
+many samples are drawn as determined by the model frequency in the model average
+sample. The result is a list with two elements: \texttt{modelData} is similar to
+the \texttt{table.pima}, and contains in addition to that the BMA probability
+and frequency in the sample, the MCMC acceptance ratios (which should be high).
+On the second element \texttt{samples}, which is again of class
+\texttt{GlmBayesMfpSamples}, the above presented functions can again be applied
+(e.g. \texttt{plotCurveEstimate}).
+
+\bibliographystyle{abbrvnat}
+\bibliography{examples}
+
+\end{document}
+
+
+
+%%% Local Variables: 
+%%% mode: latex-math
+%%% TeX-master: t
+%%% coding: utf-8-unix
+%%% ispell-local-dictionary: "british"
+%%% End: 
