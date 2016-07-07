@@ -1,5 +1,5 @@
 a9d31b864f4fb7c78d410d57107c844c *ChangeLog
-cc376e42ab28cbe2c073466c26b5bd76 *DESCRIPTION
+9edff1de02e7cd575d69ea311c949cef *DESCRIPTION
 22b727b0c27b4e114e2c509cc6443431 *NAMESPACE
 ff9d69e47f21a3c85bcc4283bd508c49 *R/GPrior-classes.R
 a63d1531fbfe4b8e976d0975cddc8129 *R/GlmBayesMfp-methods.R
@@ -22,7 +22,7 @@ e94ab8dea7c29c117ca0734b10fcff94 *R/getLogGPrior.R
 d2f3dc7addeba69cc18e9aa09d5f2bf5 *R/getLogMargLikEstimate.R
 48b059cfe728ed4d3d0c750327b24311 *R/getMarginalZ.R
 b1448ab1b143512804008be7ddc5c65a *R/getModelCoefs.R
-2059d8e46a2b8e182a6900fe69c47141 *R/glmBayesMfp.R
+122c09177db1ccb861e3e84d1e1ab70b *R/glmBayesMfp.R
 349e48e632275c2c8c34fdfcd4b8d33f *R/glmBfp-package.R
 fb8a322c4c740ec22dd313cc639e2e68 *R/helpers.R
 35c575bfc28f386289e40c3860cc7ed6 *R/hpds.R
@@ -44,7 +44,7 @@ f89bd34b0e2d4915aac8c973bf430fd9 *R/sampleGlm.R
 9e5ffc5e94d9813bf01d206b78bf72ff *inst/CITATION
 0b598e5052ce3023dfe59e45064b25e3 *inst/doc/examples.R
 5d1ef25b1f5835868af967e02f4a70fc *inst/doc/examples.Rnw
-846e4aeede4700fe67cc59f573a7a49a *inst/doc/examples.pdf
+034512c6658ef1e1b19f2fbff584fdf7 *inst/doc/examples.pdf
 19faf5572cbf03947c63c186dba75c80 *man/CustomGPrior-class.Rd
 0e555388a6d9f3499df483db90f55807 *man/CustomGPrior.Rd
 652adba97348d89268a708f128d7d377 *man/Extract.GlmBayesMfp.Rd
@@ -122,7 +122,7 @@ ad11925425d1319dca47a8c2d2578bb1 *src/fpUcHandling.cpp
 08f87b8c72b07c06621cbe2d79a9ac3e *src/fpUcHandling.h
 a9328f8c2446bbb61316452f1e65dfe4 *src/functionWraps.cpp
 dad8a72e31bd2238271c5d8f6ba28434 *src/functionWraps.h
-4eca9dd6ad82f75415779bc3bd96b4eb *src/glmBayesMfp.cpp
+19f601303a498e84f8c56313eec4dd39 *src/glmBayesMfp.cpp
 b5555ffb98b0908e6a86bde05164133b *src/gpriors.cpp
 745a523056999845447fcad374c64ade *src/gpriors.h
 0b3abaaa465b81af7d923c2eb35d6732 *src/iwls.cpp
@@ -136,7 +136,7 @@ b2f70c0d8bf7be39186a65d91cc1f729 *src/linalgInterface.cpp
 bcc2abfd248e0f55235a1da9adf43cda *src/rcppExport.h
 b222b1cabcb3d0295acecf9d38b2d458 *src/sampleGlm.cpp
 e153ea62e107a87d7d662ca30d8eee04 *src/sum.h
-825482ba68af2e1922146de1f28226cc *src/types.h
+de786779296191173f6f96dac36f46a0 *src/types.h
 0b9ae1ffbfdd74e3acc564fef15c59e5 *src/zdensity.cpp
 65ce83e762609455d106b02a9490dc7f *src/zdensity.h
 07678dcfbaa6cbbc7e516bbaf5bf689b *tests/optimization.R

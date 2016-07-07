@@ -739,7 +739,7 @@ glmSampling(const DataValues& data,
                             PosInt newPowersEqualPowerIndex = count(now.modPar.fpPars.at(newCovInd-1).begin(), now.modPar.fpPars.at(newCovInd-1).end(), powerIndex);
                             PosInt m = old.modPar.fpPars.at(newCovInd-1).size();
 
-                            logPropRatio = log(newPowersEqualPowerIndex) + log(fpInfo.fpcards[newCovInd-1]) - log1p(m);
+                            logPropRatio = log(double(newPowersEqualPowerIndex)) + log(double(fpInfo.fpcards[newCovInd-1])) - log1p(m);
                     }
                     else
                     {                                                                                // uc index
@@ -748,7 +748,7 @@ glmSampling(const DataValues& data,
                             now.dim += ucInfo.ucSizes.at(index - 1);
                             now.freeUcs = now.modPar.getFreeUcs(ucInfo.ucSizes, now.dim, maxDim);
 
-                            logPropRatio = log(old.freeUcs.size()) - log(now.modPar.ucPars.size());
+                            logPropRatio = log(double(old.freeUcs.size())) - log(double(now.modPar.ucPars.size()));
                     }
 
                     now.presentCovs.insert(newCovInd);
@@ -762,7 +762,7 @@ glmSampling(const DataValues& data,
                             now.birthprob = now.deathprob = now.moveprob = (now.modPar.fpSize > 0) ? 0.25 : 1.0 / 3;
                     }
 
-                    logPropRatio += log(now.deathprob) - log(old.birthprob) + log(old.freeCovs.size()) - log(now.presentCovs.size());
+                    logPropRatio += log(now.deathprob) - log(old.birthprob) + log(double(old.freeCovs.size())) - log(double(now.presentCovs.size()));
 
             }
             else if
@@ -778,7 +778,7 @@ glmSampling(const DataValues& data,
                             now.modPar.fpSize--; // correct invariants
                             now.dim--;
 
-                            logPropRatio =  - log(oldPowersEqualPowerIndex) - log(fpInfo.fpcards[oldCovInd-1]) + log(old.modPar.fpPars.at(oldCovInd-1).size());
+                            logPropRatio =  - log(double(oldPowersEqualPowerIndex)) - log(double(fpInfo.fpcards[oldCovInd-1])) + log(double(old.modPar.fpPars.at(oldCovInd-1).size()));
 
                     } else {                                                                                                        // uc index
                             IntSet::iterator IndIterator = discreteUniform(now.modPar.ucPars);
@@ -786,7 +786,7 @@ glmSampling(const DataValues& data,
                             now.dim -= ucInfo.ucSizes.at(*IndIterator - 1);
                             now.modPar.ucPars.erase(IndIterator);
                             now.freeUcs = now.modPar.getFreeUcs(ucInfo.ucSizes, now.dim, maxDim);
-                            logPropRatio = log(old.modPar.ucPars.size()) - log(now.freeUcs.size());
+                            logPropRatio = log(double(old.modPar.ucPars.size())) - log(double(now.freeUcs.size()));
                     }
                     now.presentCovs = now.modPar.getPresentCovs();
                     now.freeCovs = now.modPar.getFreeCovs(fpInfo, now.freeUcs, now.dim, maxDim);
@@ -797,7 +797,7 @@ glmSampling(const DataValues& data,
                     {
                             now.birthprob = now.deathprob = now.moveprob = (now.modPar.fpSize > 0) ? 0.25 : 1.0 / 3.0;
                     }
-                    logPropRatio += log(now.birthprob) - log(old.deathprob) + log(old.presentCovs.size()) - log(now.freeCovs.size());
+                    logPropRatio += log(now.birthprob) - log(old.deathprob) + log(double(old.presentCovs.size())) - log(double(now.freeCovs.size()));
 
             }
             else if (u1 < old.birthprob + old.deathprob + old.moveprob)
@@ -813,7 +813,7 @@ glmSampling(const DataValues& data,
                             now.modPar.fpPars.at(CovInd-1).insert(powerIndex);
                             PosInt newPowersEqualPowerIndex = count(now.modPar.fpPars.at(CovInd-1).begin(), now.modPar.fpPars.at(CovInd-1).end(), powerIndex);
                             // free, present Covs and move type probs are unchanged
-                            logPropRatio = log(newPowersEqualPowerIndex) - log(oldPowersEqualPowerIndex);
+                            logPropRatio = log(double(newPowersEqualPowerIndex)) - log(double(oldPowersEqualPowerIndex));
                     }
                     else
                     {                                                                                                        // uc index

@@ -545,6 +545,8 @@ glmBayesMfp <-
         {
             chainlength <- as.numeric (readline ("How long do you want the Markov chain to run?\n"))
         }
+      
+        if(chainlength > 4e9) stop("Chain length too long (larger than 4e9).")
 
         ## compute the default number of models to be saved
         if(is.null(nModels))

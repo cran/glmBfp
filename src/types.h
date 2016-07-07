@@ -20,7 +20,8 @@ typedef int Int;
 // general unsigned integer
 typedef unsigned int PosInt;
 // general large unsigned integer
-typedef unsigned long long int PosLargeInt;
+typedef unsigned long int PosLargeInt;
+
 
 
 // STL Set types ***************************************
