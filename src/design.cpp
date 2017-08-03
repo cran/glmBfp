@@ -89,10 +89,11 @@ getDesignMatrix(const ModelPar &mod,
                 const DataValues &data,
                 const FpInfo &fpInfo,
                 const UcInfo& ucInfo,
+                const FixInfo& fixInfo,
                 bool includeIntercept)
 {
     // total number of columns
-    int nColumns = mod.size(ucInfo);
+    int nColumns = mod.size(ucInfo, fixInfo); 
     if(includeIntercept)
     {
         ++nColumns;
@@ -150,6 +151,30 @@ getDesignMatrix(const ModelPar &mod,
         // correct invariant
         nextColumn = endColumn + 1;
     }
+    
+    
+    // centered fix matrices
+    for(IntSet::const_iterator
+          g = mod.fixPars.begin();
+        g != mod.fixPars.end();
+        ++g)
+    {
+      // the C index is
+      Int i = *g - 1;
+      
+      // what is the column list for this covariate?
+      PosIntVector thisColList = fixInfo.fixColList.at(i);
+      
+      // what is the end column in the return matrix?
+      PosInt endColumn = nextColumn + thisColList.size() - 1;
+      
+      // insert the centered UC matrix into the return matrix
+      ret.cols(nextColumn, endColumn) = getMultipleCols(data.centeredDesign, thisColList);
+      
+      // correct invariant
+      nextColumn = endColumn + 1;
+    }
+    
 
     return ret;
 }

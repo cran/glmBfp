@@ -25,7 +25,11 @@
 
 writeFormula <- function(models.listpart, time.var, status.var){
   surv.part <- paste("survival::Surv(", time.var, ", ", status.var, ") ~ ",sep="")
+  
   #extract linear terms
+  fix.parts <- models.listpart[[1]]$configuration$fixTerms
+  fix.names  <- attributes(models.listpart)$termNames$fix
+  
   uc.parts <- models.listpart[[1]]$configuration$ucTerms
   uc.names <- attributes(models.listpart)$termNames$uc
   
@@ -58,11 +62,11 @@ writeFormula <- function(models.listpart, time.var, status.var){
       if(this.term != "") bfp.trans <- c(bfp.trans, this.term)
       
     }
-    v <- paste(c(uc.names[uc.parts], bfp.trans), collapse=" + ")
+    v <- paste(c(uc.names[uc.parts], bfp.trans,  fix.names[fix.parts]), collapse=" + ")
     return(formula(paste(surv.part,v)))
   } 
   
   #when there are no transformed variables
-  v <- paste(c(uc.names[uc.parts]), collapse=" + ")
+  v <- paste(c(uc.names[uc.parts], fix.names[fix.parts]), collapse=" + ")
   return(formula(paste(surv.part,v)))
 }

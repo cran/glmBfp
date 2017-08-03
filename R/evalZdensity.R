@@ -86,13 +86,12 @@ evalZdensity <-
                     higherOrderCorrection=higherOrderCorrection)
 
     ## then call C++ to do the rest:
-    results <- .External(cpp_evalZdensity,
-                         config,
-                         attrs$data,
-                         attrs$fpInfos,
-                         attrs$ucInfos,
-                         attrs$distribution,
-                         options)
+    results <- cpp_evalZdensity(config,
+                                attrs$data,
+                                attrs$fpInfos,
+                                attrs$ucInfos,
+                                attrs$distribution,
+                                options)
     
     ## finally return the whole stuff.
     return(results)

@@ -12,6 +12,7 @@ NegLogUnnormZDens::NegLogUnnormZDens(const ModelPar &mod,
                                      const DataValues& data,
                                      const FpInfo& fpInfo,
                                      const UcInfo& ucInfo,
+                                     const FixInfo& fixInfo,
                                      const GlmModelConfig& config,
                                      // return the approximate *conditional* density f(y | z, mod) by operator()?
                                      // otherwise return the approximate unnormalized *joint* density f(y, z | mod).
@@ -25,12 +26,12 @@ NegLogUnnormZDens::NegLogUnnormZDens(const ModelPar &mod,
                                      iwlsObject(0),
                                      coxfitObject(0),
                                      nIter(nIter),
-                                     modSize(mod.size(ucInfo)),
+                                     modSize(mod.size(ucInfo, fixInfo)), 
                                      modResidualDeviance(R_NaReal)
 {
     if(bookkeep.doGlm)
     {
-        iwlsObject = new Iwls(mod, data, fpInfo, ucInfo, config,
+        iwlsObject = new Iwls(mod, data, fpInfo, ucInfo, fixInfo, config,
                               config.linPredStart,
                               // take the same original start value for each model, but then update
                               // it inside the iwls object when new calls to the functor are made.
@@ -56,7 +57,7 @@ NegLogUnnormZDens::NegLogUnnormZDens(const ModelPar &mod,
     {
         coxfitObject = new Coxfit(data.response,
                                   data.censInd,
-                                  getDesignMatrix(mod, data, fpInfo, ucInfo, false),
+                                  getDesignMatrix(mod, data, fpInfo, ucInfo, fixInfo, false),
                                   config.weights,
                                   config.offsets,
                                   1);

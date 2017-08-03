@@ -340,11 +340,11 @@
 
 2008-10-24  Daniel Sabanes Bove  <daniel.sabanesbove@campus.lmu.de>
 
-	* first version which is tested for the ozone data.
+	* First version which is tested for the ozone data.
 
 2008-08-22  Daniel Sabanes Bove  <daniel.sabanesbove@campus.lmu.de>
 
 	* copied everything from original BayesMfp package. This shall be
 	a seperate implementation for the new methodology with
-	hyper-g-prior & Co.
+	hyper-g-prior & Co .
 

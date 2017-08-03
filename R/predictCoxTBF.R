@@ -34,14 +34,16 @@ predict.TBFcox <- function(object, newdata, times, ...){
   ## so we can get the design matrix
   
   #lets see what happens if we do this another way
-  newDesignUC <- getUncenteredDesignMatrix(modelConfig=config,
+  newDesignUC <- getDesignMatrix(modelConfig=config,
                                            object=tempObj,
-                                           fixedColumns=FALSE)
+                                           intercept=FALSE,
+                                           center = FALSE)
   
   
-  oldDesignUC <- getUncenteredDesignMatrix(modelConfig=config,
-                                           object=obj,
-                                           fixedColumns=FALSE)
+  oldDesignUC <- getDesignMatrix(modelConfig=config,
+                                 object=obj,
+                                 intercept=FALSE,
+                                 center=FALSE)
   
   oldMeans <- colMeans(oldDesignUC)
   
@@ -96,14 +98,16 @@ predict.TBFcox.sep <- function(object, newdata, times, ...){
   ## so we can get the design matrix
   
   #lets see what happens if we do this another way
-  newDesignUC <- getUncenteredDesignMatrix(modelConfig=config,
+  newDesignUC <- getDesignMatrix(modelConfig=config,
                                            object=tempObj,
-                                           fixedColumns=FALSE)
+                                           intercept=FALSE,
+                                           center=FALSE)
   
   
-  oldDesignUC <- getUncenteredDesignMatrix(modelConfig=config,
-                                           object=obj,
-                                           fixedColumns=FALSE)
+  oldDesignUC <- getDesignMatrix(modelConfig=config,
+                                 object=obj,
+                                 intercept=FALSE,
+                                 center=FALSE)
   
   oldMeans <- colMeans(oldDesignUC)
   
@@ -181,14 +185,16 @@ predict.TBFcox.BMA <- function(object, newdata, times, ...){
     ## so we can get the design matrix
     
     #lets see what happens if we do this another way
-    newDesignUC <- getUncenteredDesignMatrix(modelConfig=config,
-                                             object=tempObj,
-                                             fixedColumns=FALSE)
+    newDesignUC <- getDesignMatrix(modelConfig=config,
+                                   object=tempObj,
+                                   intercept=FALSE,
+                                   center=FALSE)
     
     
-    oldDesignUC <- getUncenteredDesignMatrix(modelConfig=config,
-                                             object=obj,
-                                             fixedColumns=FALSE)
+    oldDesignUC <- getDesignMatrix(modelConfig=config,
+                                   object=obj,
+                                   intercept=FALSE,
+                                   center=FALSE)
     
     oldMeans <- colMeans(oldDesignUC)
     

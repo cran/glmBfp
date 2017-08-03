@@ -40,10 +40,13 @@ setMethod("[",
                   x@predictions <- x@predictions[, i, drop=FALSE]
               }
 
-              if(length(x@fixed))
+              fixCoefs <- x@fixCoefs
+              for(p in names(fixCoefs))
               {
-                  x@fixed <- x@fixed[i]
+                fixCoefs[[p]] <- fixCoefs[[p]][, i, drop=FALSE]
               }
+              x@fixCoefs <- fixCoefs
+              
               
               x@z <- x@z[i]
 
@@ -69,7 +72,7 @@ setMethod("[",
               }
               x@ucCoefs <- ucCoefs
 
-              x@nSamples <- length(x@fixed)              
+              x@nSamples <- length(x@fixCoefs[[1]])              
 
               return(x)
           })

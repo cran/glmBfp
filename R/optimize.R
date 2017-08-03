@@ -47,8 +47,7 @@ cppBfgs <- function(x0,
                           prec=1e-5,             
                           verbose=FALSE)         
 {
-    return(.External(cpp_bfgs,
-                     as.double(x0),
+    return(cpp_bfgs( as.double(x0),
                      f_,
                      as.double(min.x),
                      as.double(max.x),
@@ -79,11 +78,10 @@ cppOptimize <- function(f_,
                         max.x,       
                         prec=.Machine$double.eps^0.25) 
 {
-    return(.External(cpp_optimize,
-                     f_,
-                     as.double(min.x),
-                     as.double(max.x),
-                     as.double(prec)))
+  return(cpp_optimize(f_,
+                      as.double(min.x),
+                      as.double(max.x),
+                      as.double(prec)))
 }
 
 

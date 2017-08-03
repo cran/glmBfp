@@ -3,10 +3,10 @@
 %%\VignettePackage{glmBfp}
 %%\VignetteDepends{MASS,glmBfp}
 
-\documentclass[UKenglish]{scrreprt}
+\documentclass[british]{scrreprt}
 
 \usepackage[utf8]{inputenc}
-\usepackage[UKenglish]{babel}
+\usepackage[british]{babel}
 \usepackage[T1]{fontenc}
 \usepackage{textcomp}
 \usepackage{hyperref}

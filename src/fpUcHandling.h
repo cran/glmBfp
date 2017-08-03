@@ -111,6 +111,26 @@ struct UcInfo
     }
 };
 
+// ***************************************************************************************************//
+
+// collects all information on fixed form covariates groups
+struct FixInfo
+{
+	const PosIntVector fixSizes;
+	const PosInt maxFixDim;
+	const PosIntVector fixIndices;
+	const std::vector <PosIntVector> fixColList;
+	const PosInt nFixGroups;
+
+	FixInfo(const PosIntVector& fixSizes,
+		const PosInt maxFixDim,
+		const PosIntVector& fixIndices,
+		const std::vector<PosIntVector>& fixColList) :
+		fixSizes(fixSizes), maxFixDim(maxFixDim), fixIndices(fixIndices),
+		fixColList(fixColList), nFixGroups(fixColList.size())
+	{
+	}
+};
 
 // ***************************************************************************************************//
 

@@ -18,6 +18,7 @@ getDesignMatrix(const ModelPar &mod,
                 const DataValues &data,
                 const FpInfo &fpInfo,
                 const UcInfo& ucInfo,
+                const FixInfo& fixInfo,
                 bool includeIntercept = true);
 
 

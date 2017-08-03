@@ -65,18 +65,5 @@ private:
 }
 }
 
-RcppExport SEXP cpp_bfgs(SEXP R_interface);
-
-RcppExport SEXP cpp_optimize(SEXP R_interface);
-
-RcppExport SEXP cpp_glmBayesMfp(SEXP R_interface);
-
-RcppExport SEXP cpp_sampleGlm(SEXP R_interface);
-
-RcppExport SEXP cpp_openmptest(SEXP R_interface);
-
-RcppExport SEXP cpp_evalZdensity(SEXP R_interface);
-
-RcppExport SEXP cpp_coxfit(SEXP R_interface);
 
 #endif /* RCPPEXPORT_H_ */

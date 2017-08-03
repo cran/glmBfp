@@ -146,12 +146,12 @@ sampleBma <-
     predictions <- NULL
             
     ## vectors
-    fixed <-
-        z <- numeric()
+    z <- numeric()
     
     ## lists
     bfpCurves <-
-        ucCoefs <- list()
+      fixCoefs <-
+      ucCoefs <- list()
     
     ## Distribute samples to models
     ## ************************************************** 
@@ -290,12 +290,20 @@ sampleBma <-
             z <- c(z,
                    thisOut$samples@z[keepSamples])
             
-            ## save the intercept samples, if there are any
-            if(length(thisOut$samples@fixed) > 0L)
+            ## save all fixed coefs samples
+            for(fixName in names(thisOut$samples@fixCoefs))
             {
-                fixed <- c(fixed,
-                           thisOut$samples@fixed[keepSamples])
-            }
+              ## get these samples
+              thisFixSamples <- thisOut$samples@fixCoefs[[fixName]]
+              
+              ## append these samples
+              fixCoefs[[fixName]] <-
+                cbind(fixCoefs[[fixName]],
+                      thisFixSamples[, keepSamples, drop=FALSE])
+            }    
+            
+            
+            
 
             ## save the fit samples on the linear predictor scale
             fitted <- cbind(fitted,
@@ -351,7 +359,7 @@ sampleBma <-
                 new("GlmBayesMfpSamples",
                     fitted=fitted,
                     predictions=predictions, 
-                    fixed=fixed,
+                    fixCoefs=fixCoefs,
                     z=z,
                     bfpCurves=bfpCurves,
                     ucCoefs=ucCoefs,

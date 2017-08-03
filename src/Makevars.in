@@ -1,6 +1,7 @@
 # Time-stamp: <[Makevars.in] by DSB Mon 13/12/2010 14:23 (CET)>
 
 # flags are needed:
+CXX_STD = CXX11
 PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) @OPENMP_CFLAGS@ @LIBS@  
 PKG_CXXFLAGS = -I. @OPENMP_CFLAGS@
 

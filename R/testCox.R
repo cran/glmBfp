@@ -73,12 +73,11 @@ testCox <- function(survTimes,
 
         ## go C++ for fitting the Cox model
         storage.mode(X) <- "double"
-        tmp <- .External(cpp_coxfit,
-                         as.double(survTimes),
-                         as.integer(censInd),
-                         as.double(offsets),
-                         X,
-                         ifelse(method == "efron", 1L, 0L))
+        tmp <- cpp_coxfit(as.double(survTimes),
+                          as.integer(censInd),
+                          as.double(offsets),
+                          X,
+                          ifelse(method == "efron", 1L, 0L))
 
         ## get results
         deviance <- -2 * (tmp$loglik[1] - tmp$loglik[2])

@@ -118,6 +118,14 @@ as.data.frame.GlmBayesMfp <- function (x,
     ret$logMargLik <- logMargLiks(x)
     ret$logPrior <- logPriors(x)
 
+    ## fixed form covariates:
+    for (i in seq_along (fixNames <- attr (x, "termNames")$fixed[-1]))
+    {
+      ret[[fixNames[i]]] <- sapply (x,
+                                   function(one)
+                                     i %in% one$configuration$fixTerms)
+    }
+    
     ## uncertain fixed form covariates:
     for (i in seq_along (ucNames <- attr (x, "termNames")$uc))
     {

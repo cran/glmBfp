@@ -241,18 +241,19 @@ struct ModelPar
 {
     PowersVector fpPars; // vector of multisets
 
-    // not needed: just uce fpPars.size()
+    // not needed: just use fpPars.size()
     // PosInt nFps; // length of vector
 
     PosInt fpSize; // number of fp powers
     IntSet ucPars; // set of group indices, starting from 1 (!)
+    IntSet fixPars; // set of group indices, starting from 1 (!)
 
     // not needed: just use ucPars.size()
     // PosInt ucSize; // number of uc Groups included
 
     // start with an empty (null) model:
     ModelPar(PosInt nFps) :
-        fpPars(nFps), fpSize(0), ucPars()
+        fpPars(nFps), fpSize(0), ucPars(), fixPars()
     {
     }
 
@@ -266,7 +267,7 @@ struct ModelPar
 
     // return the size of the model (excluding the intercept)
     PosInt
-    size(const UcInfo& ucInfo) const;
+    size(const UcInfo& ucInfo, const FixInfo& fixInfo) const;
 
     // convert to R list
     Rcpp::List
@@ -408,7 +409,10 @@ struct GlmModelConfig
     // does this model use the canonical link?
     const bool canonicalLink;
 
-
+    // should we use the empirical g prior which uses 
+    // the information matrix ( J(B)^-1 ) for the covariance instead of (X'X)^-1
+    const bool empiricalgPrior;
+    
     // constructor
     GlmModelConfig(Rcpp::List& rcpp_family,
                    double nullModelLogMargLik,
@@ -418,7 +422,8 @@ struct GlmModelConfig
                    const AVector& responses,
                    bool debug,
                    bool useFixedc,
-                   double empiricalMean);
+                   double empiricalMean,
+                   bool empiricalgPrior);
 
     // destructor
     ~GlmModelConfig()

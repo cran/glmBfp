@@ -146,7 +146,7 @@ Book::Book(bool tbf,
         if (ULLONG_MAX < cl)
         {
             Rf_warning("\nchainlength too high - reducing to %d \n", ULLONG_MAX);
-            chainlength = ULLONG_MAX;
+            chainlength = ULONG_MAX;
         }
         else
         {
@@ -260,6 +260,23 @@ ModelPar::print(const FpInfo& fpInfo) const
     {
         stream << " none";
     }
+    
+    stream << "\n\nIndexes of included fixed groups:";
+    
+    if(fixPars.size() > 0)
+    {
+      for(IntSet::const_iterator
+            i = fixPars.begin();
+          i != fixPars.end();
+          ++i)
+      {
+        stream << " " << *i;
+      }
+    }
+    else
+    {
+      stream << " none";
+    }
 
     // return the resulting string
     return stream.str();
@@ -271,7 +288,8 @@ ModelPar::print(const FpInfo& fpInfo) const
 ModelPar::ModelPar(List rcpp_configuration,
                    const FpInfo& fpInfo) :
                    fpSize(0),
-                   ucPars(as<IntSet>(rcpp_configuration["ucTerms"]))
+                   ucPars(as<IntSet>(rcpp_configuration["ucTerms"])),
+                   fixPars(as<IntSet>(rcpp_configuration["fixTerms"]))
 {
     // get the list with the FP power vectors:
     List rcpp_powers = rcpp_configuration["powers"];
@@ -313,7 +331,8 @@ ModelPar::convert2list(const FpInfo& currFp) const
 
     // return with uc settings
     return List::create(_["ucTerms"] = ucPars,
-                        _["powers"] = powers);
+                        _["powers"] = powers,
+                        _["fixTerms"] = fixPars);
 }
 
 
@@ -446,8 +465,8 @@ ModelPar::pushInclusionProbs(const FpInfo& fpInfo,
 
 // return the size of the model (excluding the intercept),
 // i.e. the number of coefficients
-PosInt
-ModelPar::size(const UcInfo& ucInfo) const
+PosInt 
+ModelPar::size(const UcInfo& ucInfo, const FixInfo& fixInfo) const 
 {
     // number of FP coefficients is easy
     PosInt ret = fpSize;
@@ -461,6 +480,15 @@ ModelPar::size(const UcInfo& ucInfo) const
         ret += ucInfo.ucSizes.at(*g - 1);
     }
 
+    // and for fixed coefficients!
+    for(IntSet::const_iterator
+          g = fixPars.begin();
+        g != fixPars.end();
+        ++g)
+    {
+      ret += fixInfo.fixSizes.at(*g - 1);
+    }
+    
     // return the total
     return ret;
 }
@@ -511,7 +539,8 @@ GlmModelConfig::GlmModelConfig(List& rcpp_family,
                                const AVector& responses,
                                bool debug,
                                bool useFixedc,
-                               double empiricalMean) :
+                               double empiricalMean,
+                               bool empiricalgPrior) :
     dispersions(as<NumericVector>(rcpp_family["dispersions"])),
     weights(as<NumericVector>(rcpp_family["weights"])),
     linPredStart(as<NumericVector>(rcpp_family["linPredStart"])),
@@ -522,7 +551,8 @@ GlmModelConfig::GlmModelConfig(List& rcpp_family,
     familyString(as<std::string>(rcpp_family["family"])),
     linkString(as<std::string>(rcpp_family["link"])),
     canonicalLink((familyString == "binomial" && linkString == "logit") ||
-                      (familyString == "poisson" && linkString == "log"))
+                      (familyString == "poisson" && linkString == "log")),
+    empiricalgPrior(empiricalgPrior)
 {
     // and the phi from the R family object
     const double phi = rcpp_family["phi"];
@@ -602,6 +632,9 @@ GlmModelConfig::GlmModelConfig(List& rcpp_family,
     {
         Rf_error("cfactor equal to %f, so not positive", cfactor);
     }
+    
+    //we don't need c if we use the empirical prior
+    if(empiricalgPrior) cfactor = 1;
 
     // finally the g-prior stuff:
 

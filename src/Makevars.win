@@ -1,5 +1,7 @@
 # Time-stamp: <[Makevars.win] by DSB Mit 15/12/2010 13:38 (CET)>
 
+CXX_STD = CXX11
+
 # set windows flags
 OPENMP_CFLAGS=
 LIBS=

@@ -27,6 +27,7 @@ public:
                       const DataValues& data,
                       const FpInfo& fpInfo,
                       const UcInfo& ucInfo,
+                      const FixInfo& fixInfo,
                       const GlmModelConfig& config,
                       // return the approximate *conditional* density f(y | z, mod) by operator()?
                       // otherwise return the approximate unnormalized *joint* density f(y, z | mod).

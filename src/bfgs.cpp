@@ -13,30 +13,33 @@ using namespace Rcpp;
 
 // ***************************************************************************************************//
 
+
+
 // just an R interface to bfgs, for regression testing purposes.
+// [[Rcpp::export]]
 SEXP
-cpp_bfgs(SEXP r_interface)
+cpp_bfgs(SEXP r_startval, SEXP r_function, SEXP r_minx, SEXP r_maxx, SEXP r_precision, SEXP r_verbose  )
 {
     // extract function and start value for minimization
-    r_interface = CDR(r_interface);
-    SEXP r_startval = CAR(r_interface);
-
-    r_interface = CDR(r_interface);
-    SEXP r_function = CAR(r_interface);
-
-    // constraints on the argument
-    r_interface = CDR(r_interface);
-    SEXP r_minx = CAR(r_interface);
-
-    r_interface = CDR(r_interface);
-    SEXP r_maxx= CAR(r_interface);
-
-    // and the settings
-    r_interface = CDR(r_interface);
-    SEXP r_precision = CAR(r_interface);
-
-    r_interface = CDR(r_interface);
-    SEXP r_verbose = CAR(r_interface);
+    // r_interface = CDR(r_interface);
+    // SEXP r_startval = CAR(r_interface);
+    // 
+    // r_interface = CDR(r_interface);
+    // SEXP r_function = CAR(r_interface);
+    // 
+    // // constraints on the argument
+    // r_interface = CDR(r_interface);
+    // SEXP r_minx = CAR(r_interface);
+    // 
+    // r_interface = CDR(r_interface);
+    // SEXP r_maxx= CAR(r_interface);
+    // 
+    // // and the settings
+    // r_interface = CDR(r_interface);
+    // SEXP r_precision = CAR(r_interface);
+    // 
+    // r_interface = CDR(r_interface);
+    // SEXP r_verbose = CAR(r_interface);
 
     // wrap the R function to a cached function
     RFunction fun(r_function);

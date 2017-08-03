@@ -47,13 +47,14 @@ Iwls::Iwls(const ModelPar &mod,
            const DataValues& data,
            const FpInfo& fpInfo,
            const UcInfo& ucInfo,
+           const FixInfo& fixInfo,
            const GlmModelConfig& config,
            const AVector& linPredStart,
            bool conditional,
            double epsilon,
            bool debug,
            bool tbf) :
-           design(getDesignMatrix(mod, data, fpInfo, ucInfo)),
+           design(getDesignMatrix(mod, data, fpInfo, ucInfo, fixInfo)),
            nCoefs(design.n_cols),
            isNullModel(nCoefs == 1),
            useFixedZ(conditional),
@@ -65,7 +66,7 @@ Iwls::Iwls(const ModelPar &mod,
            unscaledPriorPrec(nCoefs, nCoefs),
            results(linPredStart, nCoefs),
            epsilon(epsilon),
-           verbose(debug),
+           // verbose(debug),
            tbf(tbf)
 {
     // only do additional computations if not the TBF methodology is used
@@ -73,6 +74,9 @@ Iwls::Iwls(const ModelPar &mod,
     {
         if(! isNullModel)
         {
+          AMatrix scaledDesignWithoutInterceptCrossprod;
+          
+           if(!config.empiricalgPrior){
             // Scaled design matrix without the intercept.
             // This will be diag(dispersions)^(-1/2) * design[, -1]
             // (attention with 0-based indexing of Armadillo objects!)
@@ -80,12 +84,40 @@ Iwls::Iwls(const ModelPar &mod,
 
             // then the log of the determinant of B'(dispersions)^(-1)B, which is part of the submatrix of R^-1
             // (we know that B'(dispersions)^(-1)B is positive definite, so we do not need to check the sign of the determinant)
-            AMatrix scaledDesignWithoutInterceptCrossprod = arma::trans(scaledDesignWithoutIntercept) * scaledDesignWithoutIntercept;
-
+            scaledDesignWithoutInterceptCrossprod = arma::trans(scaledDesignWithoutIntercept) * scaledDesignWithoutIntercept;
+           }
+           
+            AMatrix infoMatrix;
+            if(config.empiricalgPrior)
+            {
+              IwlsResults resultsFisher = results;
+              
+              unscaledPriorPrec.zeros();
+              infoMatrix = getInformation(100,
+                                          nObs,
+                                          invSqrtDispersions,
+                                          resultsFisher,
+                                          config,
+                                          response,
+                                          design,
+                                          epsilon,
+                                          unscaledPriorPrec
+              ); //an alternative to using the X'X covariance matrix
+              
+              scaledDesignWithoutInterceptCrossprod = infoMatrix.submat(1, 1, nCoefs - 1, nCoefs - 1);
+              
+            }
+            
             // input that (the main ingredient) into the unscaled R^-1
             // but first be sure there are zeroes anywhere else:
             unscaledPriorPrec.zeros();
+            
             unscaledPriorPrec.submat(1, 1, nCoefs - 1, nCoefs - 1) = scaledDesignWithoutInterceptCrossprod / config.cfactor;
+
+           //  Rcpp::Rcout << "Prior Prec:\n"<< unscaledPriorPrec << std::endl;
+            
+           // if(config.empiricalgPrior) unscaledPriorPrec.submat(1, 1, nCoefs - 1, nCoefs - 1) = infoMatrix.submat(1, 1, nCoefs - 1, nCoefs - 1);
+            
 
             // now directly use the cholesky routine to avoid copying too much unnecessarily
             int info = potrf(false,
@@ -357,3 +389,123 @@ Iwls::computeDeviance(PosInt maxIter)
     return ret;
 }
 
+
+// Compute a standard GLM to get the observed Fisher Information to use as covariance matrix.
+AMatrix 
+Iwls::getInformation(PosInt maxIter, PosInt nObs, AVector invSqrtDispersions, IwlsResults results,
+          const GlmModelConfig& config, const AVector& response, const AMatrix design,
+          double epsilon, AMatrix unscaledPriorPrec)
+{
+  
+  // initialize iteration counter and stopping criterion
+  PosInt iter = 0;
+  bool converged = false;
+  
+  AVector finalWeights(invSqrtDispersions);
+  
+  // do IWLS for at most 30 iterations and unfulfilled stopping criterion
+  while ((iter++ < maxIter) && (! converged))
+  {
+    // compute the pseudo-observations and corresponding sqrt(weights) from the linear predictor
+    AVector pseudoObs(nObs);
+    AVector sqrtWeights(invSqrtDispersions);
+    
+#pragma omp parallel for
+    for(PosInt i = 0; i < nObs; ++i)
+    {
+      double mu = config.link->linkinv(results.linPred(i));
+      double dmudEta = config.link->mu_eta(results.linPred(i));
+      
+      pseudoObs(i) = results.linPred(i) - config.offsets(i) + (response(i) - mu) / dmudEta;
+      sqrtWeights(i) *= dmudEta / sqrt(config.distribution->variance(mu));
+    }
+    
+    // calculate X'sqrt(W), which is needed twice
+    AMatrix XtsqrtW = arma::trans(design) * arma::diagmat(sqrtWeights);
+    
+    // calculate the precision matrix Q by doing a rank update:
+    // if full Bayes is used, then:
+    // Q = tcrossprod(X'sqrt(W)) + 1/g * unscaledPriorPrec
+    // if TBF are used, then:
+    // Q = tcrossprod(X'sqrt(W))
+    double scaleFactor = 0.0;
+    results.qFactor = unscaledPriorPrec; //just zeros to set up matrix
+    syrk(false,
+         false,
+         XtsqrtW,
+         scaleFactor,
+         results.qFactor);
+    
+    // decompose into Cholesky factor, Q = LL':
+    int info = potrf(false,
+                     results.qFactor);
+    
+    // check that no error occured
+    if(info != 0)
+    {
+      std::ostringstream stream;
+      stream << "Cholesky factorization Q = LL' got error code " << info <<
+        " in IWLS iteration " << iter;
+
+      throw std::domain_error(stream.str().c_str());
+    }
+    
+    // save the old coefficients vector
+    AVector coefs_old = results.coefs;
+    
+    // the rhs of the equation Q * m = rhs   or    R'R * m = rhs
+    pseudoObs = arma::diagmat(sqrtWeights) * pseudoObs;
+    results.coefs = XtsqrtW * pseudoObs;
+    
+    // note that we have some steps to go until the computation
+    // of results.coefs is finished!
+    
+    // forward-backward solve LL' * v = rhs
+    info = potrs(false,
+                 results.qFactor,
+                 results.coefs);
+    
+    // check that no error occured
+    if(info != 0)
+    {
+      std::ostringstream stream;
+      stream << "Forward-backward solve got error code " << info <<
+        " in IWLS iteration " << iter;
+
+      throw std::domain_error(stream.str().c_str());
+    }
+    
+    // the new linear predictor is
+    results.linPred = design * results.coefs + config.offsets;
+    
+    // compare on the coefficients scale, but not in the first iteration where
+    // it is not clear from where coefs_old came. Be safe and always
+    // decide for non-convergence in this case.
+    converged = (iter > 1) ? (criterion(coefs_old, results.coefs) < epsilon) : false;
+    finalWeights = sqrtWeights;
+  }
+  
+  // do not (!)
+  // warn if IWLS did not converge within the maximum number of iterations
+  // because the maximum number of iterations can be set by user of this function.
+  
+  // compute log precision determinant
+  results.logPrecisionDeterminant = 2.0 * arma::as_scalar(arma::sum(arma::log(arma::diagvec(results.qFactor))));
+  
+  
+  //to calculate the observed Information we need the dispersion
+  double dispersion;
+  if( config.familyString == "poisson" || config.familyString == "binomial" ){
+    dispersion = 1;
+  } else {
+    dispersion = dot(finalWeights, arma::square(response - results.linPred))/(nObs-results.coefs.n_elem);
+  }
+  
+  
+  AMatrix observed = arma::trans(design) *  arma::diagmat(arma::square(finalWeights)) * design / dispersion;
+  
+  
+  AVector residuals = arma::square(response - results.linPred);
+  
+  return(observed);
+}

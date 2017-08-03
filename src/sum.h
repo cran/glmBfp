@@ -133,7 +133,7 @@ template<class T>
             // Check that the sums in vp and vn are well-conditioned.
             sp = condensed_summation(vp);
             sn = condensed_summation(vn);
-            well_conditioned = (fabs((sp + sn) / (sp - sn)) == 1.0);
+            well_conditioned = (std::abs((sp + sn) / (sp - sn)) == 1.0);
         }
 
         vector<T> vnew;

@@ -17,7 +17,7 @@ be the number of samples available for each bfp curve, e.g.
 \item{predictions}{samples from the predictive distribution for new data
 on the linear predictor scale, if \code{newdata} was provided
 (\code{nrow(newdata)} x \code{nSamples})}
-\item{fixed}{the intercept samples}
+\item{fixCoefs}{the intercept and fixed covariate samples}
 \item{z}{the log covariance factor samples}
 \item{bfpCurves}{samples of fractional polynomial function values evaluated at
 grids, contains one list element for each FP. Each element is

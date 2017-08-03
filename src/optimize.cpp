@@ -14,23 +14,24 @@ using namespace Rcpp;
 // ***************************************************************************************************//
 
 // just an R interface to the brent optimization routine, for regression testing purposes.
+// [[Rcpp::export]]
 SEXP
-cpp_optimize(SEXP R_interface)
+cpp_optimize(SEXP R_function,  SEXP R_minx, SEXP R_maxx, SEXP R_precision)
 {
     // extract function
-    R_interface = CDR(R_interface);
-    SEXP R_function = CAR(R_interface);
-
-    // constraints on the argument
-    R_interface = CDR(R_interface);
-    SEXP R_minx = CAR(R_interface);
-
-    R_interface = CDR(R_interface);
-    SEXP R_maxx= CAR(R_interface);
-
-    // and the settings
-    R_interface = CDR(R_interface);
-    SEXP R_precision = CAR(R_interface);
+    // R_interface = CDR(R_interface);
+    // SEXP R_function = CAR(R_interface);
+    // 
+    // // constraints on the argument
+    // R_interface = CDR(R_interface);
+    // SEXP R_minx = CAR(R_interface);
+    // 
+    // R_interface = CDR(R_interface);
+    // SEXP R_maxx= CAR(R_interface);
+    // 
+    // // and the settings
+    // R_interface = CDR(R_interface);
+    // SEXP R_precision = CAR(R_interface);
 
     // wrap the R function to a cached function
     RFunction fun(R_function);

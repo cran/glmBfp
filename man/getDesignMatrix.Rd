@@ -5,7 +5,7 @@
 \title{Construct the design matrix for a given bfp GLM model}
 \usage{
 getDesignMatrix(modelConfig = object[[1]]$configuration, object,
-  fixedColumns = TRUE, center = TRUE)
+  intercept = TRUE, center = TRUE)
 }
 \arguments{
 \item{modelConfig}{the model configuration list which must have elements
@@ -14,7 +14,7 @@ getDesignMatrix(modelConfig = object[[1]]$configuration, object,
 \item{object}{the \code{GlmBayesMfp} object, which is needed because it contains
 the covariates matrix and indices vector}
 
-\item{fixedColumns}{return the fixed columns inside the matrix (default) or not?}
+\item{intercept}{return the intercept column inside the matrix (default) or not?}
 
 \item{center}{should the data be centered (default) or not?}
 }

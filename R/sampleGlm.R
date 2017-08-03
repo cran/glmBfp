@@ -171,7 +171,7 @@ sampleGlm <-
     ## get the (centered) design matrix of the model for the original data
     design <- getDesignMatrix(modelConfig=config,
                               object=object,
-                              fixedColumns=doGlm)
+                              intercept=doGlm) 
     ## the model dimension (including the intercept for GLMs)
     modelDim <- ncol(design)
     
@@ -285,15 +285,16 @@ sampleGlm <-
     }
     
     ## then call C++ to do the rest:
-    cppResults <- .External(cpp_sampleGlm,
-                            model,
-                            attrs$data,
-                            attrs$fpInfos,
-                            attrs$ucInfos,
-                            attrs$distribution,
-                            attrs$searchConfig,
-                            options,
-                            marginalz)
+    cppResults <- cpp_sampleGlm(
+      model,
+      attrs$data,
+      attrs$fpInfos,
+      attrs$ucInfos,
+      attrs$fixInfos,
+      attrs$distribution,
+      attrs$searchConfig,
+      options,
+      marginalz)
 
     ## start return list
     results <- list()
@@ -343,6 +344,7 @@ sampleGlm <-
     ## abbreviation for the coefficients sample matrix (nCoefs x nSamples)
     simCoefs <-
         results$coefficients <- cppResults$samples$coefficients
+     
     
     ## so the number of samples is:
     nSamples <- ncol(simCoefs)
@@ -350,6 +352,11 @@ sampleGlm <-
     ## the linear predictor samples for the fitted data:
     fitted <- design %*% simCoefs
 
+    # give some names
+    
+    rownames(results$coefficients) <- colnames(design)
+    if(doGlm) rownames(results$coefficients)[1] <- "(Intercept)"
+    
     ## samples from the predictive distribution for new data,
     ## if this is required
     predictions <-
@@ -371,7 +378,7 @@ sampleGlm <-
               ## so we can get the design matrix
               newDesign <- getDesignMatrix(modelConfig=config,
                                            object=tempObj,
-                                           fixedColumns=doGlm)
+                                           intercept=doGlm)
               
               ## so the linear predictor samples are
               linPredSamples <- newDesign %*% simCoefs
@@ -380,12 +387,12 @@ sampleGlm <-
               
               newDesignUC <- getDesignMatrix(modelConfig=config,
                                              object=tempObj,
-                                             fixedColumns=doGlm,
+                                             intercept=doGlm,
                                              center=FALSE)
               
               oldDesignUC <- getDesignMatrix(modelConfig=config,
                                              object=object,
-                                             fixedColumns=doGlm,
+                                             intercept=doGlm,
                                              center=FALSE)
               
               oldMeans <- colMeans(oldDesignUC)
@@ -412,22 +419,54 @@ sampleGlm <-
 
     ## process all coefficients samples: fixed, FP, UC in this order.
     
+    ## now we need the colnames of the design matrix:
+    colNames <- colnames(attr(object,"data")$x)
+    
+    
     ## invariant: already coefCounter coefficients samples (rows of simCoefs) processed    
     coefCounter <- 0L
 
-    ## the intercept samples
-    fixed <-
-        if(doGlm)
-        {
-            ## increment coefCounter because we process the intercept!
-            coefCounter <- coefCounter + 1L
+    ## the fixed covariate (and intercept samples)
+    fixCoefs <- list ()
+        
+    if(doGlm){
+      fixName <- attrs$termNames$fixed[1]
+      mat <- simCoefs[1, ,
+                      drop=FALSE]   
+      coefCounter <- coefCounter + 1
+      
+      ## and also get the names
+      rownames(mat) <- colNames[1]
+      
+      ## and this is located in the list
+      fixCoefs[[fixName]] <- mat
+    }
+    
+    ## start processing all fixed terms
+    for (i in seq_along(fixList <- attrs$indices$fixed))
+    {
+      ## get the name of the fixed term
+      fixName <- attrs$termNames$fixed[i+doGlm]
+      
+      ## check if this fixed covariate is included in the model
+      if (i %in% config$fixTerms)
+      {
+        ## then we get the corresponding samples
+        mat <- simCoefs[coefCounter +
+                          seq_len (len <- length(fixList[[i]])), ,
+                        drop=FALSE]   
+        
+        ## correct invariant
+        coefCounter <- coefCounter + len
+        
+        ## and also get the names
+        rownames(mat) <- colNames[fixList[[i]]]
+        
+        ## and this is located in the list
+        fixCoefs[[fixName]] <- mat
+      }
+    }
             
-            simCoefs[1L, ]
-        } else {
-            ## There is no intercept in the Cox model, so we return an empty
-            ## vector because that is expected by the GlmBayesMfpSamples class!
-            numeric(0L)
-        }                
    
     ## samples of fractional polynomial function values evaluated at grids will
     ## be elements of this list:
@@ -497,8 +536,6 @@ sampleGlm <-
     ## Note that only those UC terms are included which also appear in the model
     ## configuration.
     
-    ## now we need the colnames of the design matrix:
-    colNames <- colnames(object$x)
 
     ## start processing all UC terms
     for (i in seq_along(ucList <- attrs$indices$ucList))
@@ -529,7 +566,7 @@ sampleGlm <-
     results$samples <- new("GlmBayesMfpSamples",
                            fitted=fitted,
                            predictions=predictions,
-                           fixed=fixed,
+                           fixCoefs=fixCoefs,
                            z=cppResults$samples$z,
                            bfpCurves=bfpCurves,
                            ucCoefs=ucCoefs,

@@ -66,14 +66,13 @@ computeModels <- function(configurations,
     attrs$searchConfig$modelConfigs <- configurations
     
     ## then go C++
-    result <-
-        .External (cpp_glmBayesMfp,
-                   attrs$data,
-                   attrs$fpInfos,
-                   attrs$ucInfos,
-                   attrs$searchConfig,
-                   attrs$distribution,
-                   attrs$options)
+    result <- cpp_glmBayesMfp(attrs$data,
+                              attrs$fpInfos,
+                              attrs$ucInfos,
+                              attrs$fixInfos,
+                              attrs$searchConfig,
+                              attrs$distribution,
+                              attrs$options)
 
     ## C++ attaches the following attributes:
 

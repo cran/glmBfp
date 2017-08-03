@@ -253,7 +253,7 @@ coxTBF <- function(formula, data, type, baseline='shrunk', globalEB=FALSE, IC=FA
     
     for(j in 1:length(models)){
       #    foreach(j = 1:length(models)) %dopar% {
-      new.design.matrix <- getDesignMatrix(object=models[j])[,-1,drop=FALSE]
+      new.design.matrix <- getDesignMatrix(object=models[j], intercept=FALSE)
       
       new.data <- data.frame(cbind(status.var=attributes(models[j])$data$censInd,
                                    time.var=attributes(models[j])$data$y,
@@ -375,7 +375,7 @@ coxTBF <- function(formula, data, type, baseline='shrunk', globalEB=FALSE, IC=FA
     
     fake.model[[1]]$configuration <- list(powers=list(), ucTerms=uc.num.inc)
     
-    new.design.matrix <- getDesignMatrix(object=fake.model)[,-1,drop=FALSE]
+    new.design.matrix <- getDesignMatrix(object=fake.model, intercept=FALSE)
     
     
     #get coefficients for BMA
@@ -440,7 +440,7 @@ coxTBF <- function(formula, data, type, baseline='shrunk', globalEB=FALSE, IC=FA
   if(type %in% c("MAP","MPM")){
     if(!keepModelList) rm(models)
     
-    new.design.matrix <- getDesignMatrix(object=model.listpart)[,-1,drop=FALSE]
+    new.design.matrix <- getDesignMatrix(object=model.listpart, intercept=FALSE)
   
     new.data <- data.frame(cbind(status.var=attributes(model.listpart)$data$censInd,
                                  time.var=attributes(model.listpart)$data$y,

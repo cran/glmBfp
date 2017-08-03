@@ -12,7 +12,8 @@ glmBayesMfp(formula = formula(data), censInd = NULL,
   "sampling"), subset, na.action = na.omit, verbose = TRUE, debug = FALSE,
   nModels, nCache = 1e+09, chainlength = 10000, nGaussHermite = 20,
   useBfgs = FALSE, largeVariance = 100, useOpenMP = TRUE,
-  higherOrderCorrection = FALSE, fixedcfactor = FALSE)
+  higherOrderCorrection = FALSE, fixedcfactor = FALSE,
+  empiricalgPrior = FALSE, centerX = TRUE)
 }
 \arguments{
 \item{formula}{model formula}
@@ -98,6 +99,10 @@ Laplace approximation be used, which works only for canonical GLMs? (not
 default)}
 
 \item{fixedcfactor}{If TRUE sets the c factor assuming alpha is set to 0. Otherwise take alpha=mean(y)}
+
+\item{empiricalgPrior}{If TRUE uses the the observed isnformation matrix instead of X'X in the g prior. (Experimental)}
+
+\item{centerX}{Center the data before fitting (FALSE)}
 }
 \value{
 An object of S3 class \code{GlmBayesMfp}.

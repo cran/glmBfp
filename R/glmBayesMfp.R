@@ -159,7 +159,8 @@
 ##' Laplace approximation be used, which works only for canonical GLMs? (not
 ##' default) 
 ##' @param fixedcfactor If TRUE sets the c factor assuming alpha is set to 0. Otherwise take alpha=mean(y)
-##' 
+##' @param  empiricalgPrior If TRUE uses the the observed isnformation matrix instead of X'X in the g prior. (Experimental)
+##' @param centerX Center the data before fitting (FALSE)
 ##'
 ##' @aliases glmBayesMfp GlmBayesMfp
 ##' @return An object of S3 class \code{GlmBayesMfp}.
@@ -193,7 +194,9 @@ glmBayesMfp <-
               largeVariance=100,
               useOpenMP=TRUE,
               higherOrderCorrection=FALSE,
-              fixedcfactor=FALSE)
+              fixedcfactor=FALSE,
+              empiricalgPrior=FALSE,
+              centerX=TRUE)
 {
     ## checks
     stopifnot(is.bool(tbf),
@@ -203,7 +206,8 @@ glmBayesMfp <-
               is.bool(empiricalBayes),
               is(priorSpecs$gPrior, "GPrior"),
               is.bool(useOpenMP),
-              is.bool(higherOrderCorrection))
+              is.bool(higherOrderCorrection),
+              is.bool(empiricalgPrior))
 
     ## see whether GLM or Cox is requested
     doGlm <- is.null(censInd)
@@ -255,24 +259,35 @@ glmBayesMfp <-
     m <- m[match(temp, names(m), nomatch = 0)]
    
     ## sort formula, so that bfp comes before uc
+    ## filter special parts in formula: uncertain covariates (uc) and (Bayesian) fractional polynomials (bfp)
+    special <- c("uc", "bfp")
+        
     Terms <- if (missing(data))
-        terms(formula)
-    else
-        terms(formula, data = data)
+            terms(formula, special)
+        else
+            terms(formula, special, data = data)
+
+    tempVarNames <- rownames(attr(Terms, 'factors'))
 
     ## check if intercept is present
     if (! attr(Terms, "intercept"))
         stop(simpleError("there must be an intercept term in the model formula"))
 
+    ucTempVarNames <- sort(tempVarNames[attr(Terms, "specials")$uc])
+    bfpTempVarNames <- sort(tempVarNames[attr(Terms, "specials")$bfp])
+    fixTempVarNames <- sort(tempVarNames[ - c(1,
+                                              attr(Terms, "specials")$uc,
+                                              attr(Terms, "specials")$bfp)])
+
+
     ## now sort the formula
     sortedFormula <- paste(deparse (Terms[[2]]),
                            "~ 1 +", 
-                           paste(sort(attr(Terms, "term.labels")),
+                           paste(c(bfpTempVarNames, ucTempVarNames, fixTempVarNames),
                                  collapse = "+"))
     sortedFormula <- as.formula (sortedFormula)
 
     ## filter special parts in formula: uncertain covariates (uc) and (Bayesian) fractional polynomials (bfp)
-    special <- c("uc", "bfp")
     Terms <- if (missing(data))
         terms(sortedFormula, special)
     else
@@ -282,6 +297,8 @@ glmBayesMfp <-
     nUcGroups <- length (ucTermInd)
     bfpTermInd <- attr (Terms, "specials")$bfp
     nFps <- length (bfpTermInd)
+    fixTermInd <- seq_along(tempVarNames)[-c(1, ucTermInd, bfpTermInd)] # indices of fixed terms
+    nFixGroups <- length(fixTermInd)
     
     ## check if bfp's are present
     if (nFps == 0)
@@ -320,6 +337,29 @@ glmBayesMfp <-
     ## consistency check:
     stopifnot(identical(length(ucTermList), nUcGroups))
 
+    # if fixed variables are present
+    if (nFixGroups) {
+        ## remove uc() from entries and save the inner arguments
+        fixInner <- fixTempVarNames
+        covariates[fixTermInd - 1] <- fixInner
+
+        ## determine association of terms with fixed groups
+        fixTermLengths <- sapply(fixInner, function(oneFix)
+            length(attr(terms(as.formula(paste("~", oneFix))), "term.labels"))
+                                 )
+        fixTermLengthsCum <- c(0, cumsum(fixTermLengths - 1)) # how much longer than 1, accumulated
+        fixTermList <- lapply(seq(along = fixTermInd), function(i) # list for association uc group and assign index
+                              as.integer(
+                                         fixTermInd[i] - 1 + # Starting assign index
+                                         fixTermLengthsCum[i] + # add lengths from before
+                                         0:(fixTermLengths[i] - 1) # range for this uc term
+                                         )
+                              )
+    } else {
+        fixInner <- fixTermList <- NULL
+    }
+
+
     ## check that not two entries are present for any covariate,
     ## i.e. the covariate names must be unique
     if(! identical(covariates,
@@ -349,7 +389,7 @@ glmBayesMfp <-
 
     ## build design matrix
     X <- model.matrix (newTerms, m)
-    Xcentered <- scale(X, center=TRUE, scale=FALSE)
+    Xcentered <- scale(X, center=centerX, scale=FALSE)
 
     ## get and check weights
     weights <- as.vector(model.weights(m))
@@ -399,7 +439,7 @@ glmBayesMfp <-
 
     ## vector of length col (X) giving uc group indices or 0 (no uc)
     ## for associating uc groups with model matrix columns: ucIndices
-    ucIndices <- fpMaxs <- integer (length (termNumbers))
+    fixIndices <- ucIndices <- fpMaxs <- integer (length (termNumbers))
 
     ## list for mapping group -> columns in model matrix: ucColList
     if(nUcGroups){
@@ -410,6 +450,17 @@ glmBayesMfp <-
         ucColList <- lapply (seq (along=ucTermList), function (ucGroup) which (ucIndices == ucGroup))
     } else {
         ucColList <- NULL
+    }
+
+    ## list for mapping group -> columns in model matrix: fixColList
+    if (nFixGroups) {
+        for (i in seq(along = fixTermList)) {
+            fixIndices[termNumbers %in% fixTermList[[i]]] <- i
+        }
+
+        fixColList <- lapply(seq(along = fixTermList), function(fixGroup) which(fixIndices == fixGroup))
+    } else {
+        fixColList <- NULL
     }
 
 
@@ -446,8 +497,13 @@ glmBayesMfp <-
     if (length(unique(fpMaxs[fpMaxs != 0])) > 1L)
         stop(simpleError("all maximum FP degrees must be identical"))
 
+    ## Check if factor variables are used in bfp
+    if(any(c('logical','factor')%in% lapply(m, class)[bfpInds]))
+      stop (simpleError("logical or factor variables cannot be fractional polynomials"))
+    
+    
     ## check that only the intercept (one column) is a fixed term
-    if (sum(! (fpMaxs | ucIndices)) > 1)
+    if (sum(! ((fpMaxs | ucIndices)| fixIndices)) > 1)
         stop (simpleError("only the intercept can be a fixed term"))
     
     ## attach a loglik-function, which is then called from the C++ code.
@@ -491,7 +547,7 @@ glmBayesMfp <-
         return (sum (singleDegreeNumbers))
     }
     singleNumbers <- sapply (fpMaxs, getNumberPossibleFps)
-    totalNumber <- prod (singleNumbers) * 2^(nUcGroups) # maximum number of possible models
+    totalNumber <- prod (singleNumbers) * 2^(nUcGroups) + 1 # maximum number of possible models (+1 for model with only fixed covariates)
 
     
     ## process the nModels argument
@@ -546,8 +602,7 @@ glmBayesMfp <-
             chainlength <- as.numeric (readline ("How long do you want the Markov chain to run?\n"))
         }
       
-        if(chainlength > 4e9) stop("Chain length too long (larger than 4e9).")
-
+        
         ## compute the default number of models to be saved
         if(is.null(nModels))
         {
@@ -621,6 +676,14 @@ glmBayesMfp <-
                                         # (column -> which group) 
                     ucColList=ucColList) # list for group -> which columns mapping
 
+
+    ## pack the UC info things together
+    fixInfos <- list(fixIndices = as.integer(fixIndices), # vector giving fixed covaraite custer indices
+                                    # (column -> which group) 
+                fixColList = fixColList) # list for group -> which columns mapping
+
+
+
     ## pack model search configuration:
     searchConfig <- list(totalNumber=as.double(totalNumber), # cardinality of model space                         
                          nModels=as.integer(nModels),         # number of best
@@ -652,7 +715,8 @@ glmBayesMfp <-
                                         # factor g (S4 class object)
                          modelPrior=priorSpecs$modelPrior, # model prior string                         
                          family=family,    # GLM family and link,
-                         yMean=mean(Y))   #  
+                         yMean=mean(Y),   #  pass the mean, which we use when fixedc=TRUE
+                         empiricalgPrior=empiricalgPrior) # should we use empirical g prior
 
     ## pack other options
     options <- list(verbose=verbose,           # should progress be displayed?
@@ -664,14 +728,13 @@ glmBayesMfp <-
                                         # the higher-order Laplace correction be used?    
     
     ## then go C++
-    Ret <-
-        .External (cpp_glmBayesMfp,
-                   data,
-                   fpInfos,
-                   ucInfos,
-                   searchConfig,
-                   distribution,
-                   options)
+    Ret <- cpp_glmBayesMfp(data,
+                           fpInfos,
+                           ucInfos,
+                           fixInfos,
+                           searchConfig,
+                           distribution,
+                           options)
 
     ## C++ attaches the following attributes:
 
@@ -691,6 +754,7 @@ glmBayesMfp <-
     attr (Ret, "data") <- data
     attr(Ret, "fpInfos") <- fpInfos
     attr(Ret, "ucInfos") <- ucInfos
+    attr(Ret, "fixInfos") <- fixInfos
     attr(Ret, "searchConfig") <- searchConfig
     attr(Ret, "distribution") <- distribution
     attr(Ret, "options") <- options
@@ -703,21 +767,23 @@ glmBayesMfp <-
     attr (Ret, "priorSpecs") <- priorSpecs
 
 
-    ## list with index info
-    fixedInds <- setdiff (1:ncol (X), c (bfpInds, which (ucIndices > 0)))
+        ## list with index info
+    #fixedInds <- setdiff (1:ncol (X), c (bfpInds, which (ucIndices > 0)))
     attr (Ret, "indices") <- list (uc = ucIndices,
                                    ucList = ucColList,
                                    bfp = bfpInds,
-                                   fixed = fixedInds)
+                                   fixed = fixIndices)
 
     
     ## names of the terms
-    fixedNamesInds <- setdiff(2:length (varlist), unlist (attr (Terms, "specials"))) + 1
-    interceptName <- ifelse (attr (Terms, "intercept"), "(Intercept)", NULL)
-    attr (Ret, "termNames") <- list (fixed=
-                                     c(interceptName,
-                                       sapply(as.list(vars[fixedNamesInds]),
-                                               deparse)),
+    fixedNamesInds <- c(setdiff(2:length (varlist), unlist (attr (Terms, "specials"))) , 1)
+
+    # interceptName <- ifelse (attr (Terms, "intercept"), "(Intercept)", NULL)
+    if (doGlm) { interceptName <- "(Intercept)"
+    } else if (!doGlm) interceptName <- NULL
+    
+    
+    attr (Ret, "termNames") <- list (fixed=c(interceptName, fixInner),
                                      bfp=unlist(bfpInner),
                                      uc=ucInner)
 
