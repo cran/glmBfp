@@ -17,4 +17,3 @@ The slots are:
 }
 \keyword{classes}
 \keyword{internal}
-

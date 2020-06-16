@@ -15,4 +15,3 @@ The slots are:
 the constructor \code{\link{IncInvGammaGPrior}}
 }
 \keyword{classes}
-

@@ -14,4 +14,3 @@ The slots are:
 the constructor \code{\link{HypergPrior}}
 }
 \keyword{classes}
-

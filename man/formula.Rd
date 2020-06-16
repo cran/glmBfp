@@ -32,4 +32,3 @@ variable selection (\dQuote{uncertain covariate fixed form covariate groups}) in
 \code{\link{glmBayesMfp}}.
 }
 \keyword{utilities}
-

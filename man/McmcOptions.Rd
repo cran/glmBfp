@@ -4,8 +4,12 @@
 \alias{McmcOptions}
 \title{Constructor for class McmcOptions}
 \usage{
-McmcOptions(iterations = as.integer(burnin + (step * samples)),
-  burnin = 10000L, step = 10L, samples = 10000L)
+McmcOptions(
+  iterations = as.integer(burnin + (step * samples)),
+  burnin = 10000L,
+  step = 10L,
+  samples = 10000L
+)
 }
 \arguments{
 \item{iterations}{number of MCMC iterations (default: \code{110,000})}
@@ -26,4 +30,3 @@ Note that the argument \code{samples} is included for convenience only -
 you can specify it instead of \code{iterations}.
 }
 \keyword{classes}
-

@@ -23,4 +23,3 @@ on a linear fit.
 }
 \keyword{internal}
 \keyword{utilities}
-

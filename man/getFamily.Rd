@@ -28,4 +28,3 @@ and "simulate" which can generate random variates for a given linear predictor a
 (this function of course also uses the "phi" value)
 }
 \keyword{internal}
-

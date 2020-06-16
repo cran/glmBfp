@@ -23,4 +23,3 @@ The matrix can then be passed to prediction functions.
 }
 \keyword{internal}
 \keyword{utilities}
-

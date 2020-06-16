@@ -22,4 +22,3 @@ A data frame of survival probabilities with rows for each row of newdata and col
 Predicts survival probabilities at given times. Compatible with predictSurvProb functions 
 required by \code{pec} package. Predicts BMA objects.
 }
-

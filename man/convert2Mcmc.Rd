@@ -19,4 +19,3 @@ an S3 class \dQuote{mcmc} object
 Convert samples to mcmc objects
 }
 \keyword{programming}
-

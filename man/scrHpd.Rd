@@ -35,4 +35,3 @@ Besag, J.; Green, P.; Higdon, D. \& Mengersen, K. (1995):
 }
 \keyword{htest}
 \keyword{multivariate}
-

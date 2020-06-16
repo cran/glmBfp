@@ -10,6 +10,8 @@
 #include <set>
 #include <vector>
 
+#define ARMA_BLAS_CAPITALS
+#define ARMA_LAPACK_CAPITALS
 #include <RcppArmadillo.h>
 
 

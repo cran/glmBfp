@@ -24,4 +24,3 @@ interest.
 \code{\link{scrHpd}}
 }
 \keyword{htest}
-

@@ -18,4 +18,3 @@ a new \code{\linkS4class{IncInvGammaGPrior}} object
 Constructor for the incomplete inverse gamma g-prior class
 }
 \keyword{classes}
-

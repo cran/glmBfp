@@ -4,10 +4,20 @@
 \alias{sampleGlm}
 \title{Produce posterior samples from one GLM / Cox model}
 \usage{
-sampleGlm(object, mcmc = McmcOptions(), estimateMargLik = TRUE,
-  gridList = list(), gridSize = 203L, newdata = NULL, fixedZ = NULL,
-  marginalZApprox = NULL, verbose = TRUE, debug = FALSE,
-  useOpenMP = TRUE, correctedCenter = FALSE)
+sampleGlm(
+  object,
+  mcmc = McmcOptions(),
+  estimateMargLik = TRUE,
+  gridList = list(),
+  gridSize = 203L,
+  newdata = NULL,
+  fixedZ = NULL,
+  marginalZApprox = NULL,
+  verbose = TRUE,
+  debug = FALSE,
+  useOpenMP = TRUE,
+  correctedCenter = FALSE
+)
 }
 \arguments{
 \item{object}{the \code{GlmBayesMfp} object, from which only the first model
@@ -86,4 +96,3 @@ samples from an approximate posterior distribution are obtained.
 }
 \keyword{models}
 \keyword{regression}
-

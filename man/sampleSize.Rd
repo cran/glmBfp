@@ -16,4 +16,3 @@ the resulting sample size
 Compute the number of samples for a given MCMC options triple
 }
 \keyword{programming}
-

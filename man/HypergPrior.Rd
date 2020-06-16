@@ -17,4 +17,3 @@ a new \code{\linkS4class{HypergPrior}} object
 Constructor for the hyper-g prior class
 }
 \keyword{classes}
-

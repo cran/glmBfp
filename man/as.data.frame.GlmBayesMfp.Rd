@@ -12,10 +12,10 @@
 \item{row.names}{optional rownames (default is to keep the names of the
 \code{\link{GlmBayesMfp}} list)}
 
+\item{\dots}{unused}
+
 \item{freq}{should empirical frequencies of the models in the sampling
 path be given? (not default)}
-
-\item{\dots}{unused}
 }
 \value{
 The data frame with the following columns:
@@ -30,11 +30,10 @@ status, and for each fractional polynomial a column with the powers are returned
 \description{
 Convert a GlmBayesMfp object into a data frame
 }
-\author{
-Daniel Sabanes Bove \email{daniel.sabanesbove@ifspm.uzh.ch}
-}
 \seealso{
 \code{\link{glmBayesMfp}}
 }
+\author{
+Daniel Sabanes Bove \email{daniel.sabanesbove@ifspm.uzh.ch}
+}
 \keyword{methods}
-

@@ -28,4 +28,3 @@ then transformed and optionally centered.
 Can be used in formulas as poly() is.
 }
 \keyword{utilities}
-

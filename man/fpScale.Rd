@@ -19,4 +19,3 @@ covariate vector.
 This function is (almost exactly) copied from package \dQuote{mfp} to be consistent.
 }
 \keyword{internal}
-

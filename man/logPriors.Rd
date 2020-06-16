@@ -16,4 +16,3 @@ the vector of log prior values
 Extract the log prior values from a GlmBayesMfp object
 }
 \keyword{utilities}
-

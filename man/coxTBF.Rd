@@ -4,8 +4,18 @@
 \alias{coxTBF}
 \title{Fit Cox models using glmBayesMfp}
 \usage{
-coxTBF(formula, data, type, baseline = "shrunk", globalEB = FALSE,
-  IC = FALSE, sep = FALSE, keepModelList = FALSE, ..., overrideConfig)
+coxTBF(
+  formula,
+  data,
+  type,
+  baseline = "shrunk",
+  globalEB = FALSE,
+  IC = FALSE,
+  sep = FALSE,
+  keepModelList = FALSE,
+  ...,
+  overrideConfig
+)
 }
 \arguments{
 \item{formula}{model formula with Surv object as LHS and \code{\link{uc}} or \code{\link{bfp}} 
@@ -40,4 +50,3 @@ Provides global empirical Bayes and AIC/BIC based model inference.
 }
 \keyword{models}
 \keyword{regression}
-

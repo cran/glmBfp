@@ -4,8 +4,13 @@
 \alias{testCox}
 \title{Test the Cox model computation for the TBF approach}
 \usage{
-testCox(survTimes, censInd, offsets = rep.int(0, length(survTimes)), X,
-  useCppCode = FALSE)
+testCox(
+  survTimes,
+  censInd,
+  offsets = rep.int(0, length(survTimes)),
+  X,
+  useCppCode = FALSE
+)
 }
 \arguments{
 \item{survTimes}{the survival times}
@@ -35,4 +40,3 @@ Daniel Sabanes Bove
 }
 \keyword{internal}
 \keyword{utilities}
-

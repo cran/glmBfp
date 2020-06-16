@@ -2,8 +2,8 @@
 % Please edit documentation in R/glmBfp-package.R
 \docType{package}
 \name{glmBfp-package}
-\alias{glmBfp}
 \alias{glmBfp-package}
+\alias{glmBfp}
 \title{Bayesian inference for fractional polynomial models from the GLM
 and Cox family}
 \description{
@@ -14,4 +14,3 @@ family
 Daniel Sabanes Bove \email{daniel.sabanesbove@ifspm.uzh.ch}
 }
 \keyword{package}
-

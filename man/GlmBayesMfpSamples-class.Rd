@@ -31,4 +31,3 @@ Each element is a matrix with the layout \code{nCoefs x nSamples}.}
 }
 \keyword{classes}
 \keyword{internal}
-

@@ -16,4 +16,3 @@ a new \code{\linkS4class{CustomGPrior}} object
 Constructor for the custom g-prior class
 }
 \keyword{classes}
-

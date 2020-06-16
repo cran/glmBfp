@@ -22,4 +22,3 @@ power vector (with at least one element) is provided.
 }
 \keyword{internal}
 \keyword{utilities}
-

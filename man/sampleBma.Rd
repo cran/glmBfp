@@ -5,8 +5,14 @@
 \title{Produce posterior samples from a Bayesian model average over GLMs / Cox
 models}
 \usage{
-sampleBma(object, mcmc = McmcOptions(), postProbs = posteriors(object),
-  nMargLikSamples = NULL, verbose = TRUE, ...)
+sampleBma(
+  object,
+  mcmc = McmcOptions(),
+  postProbs = posteriors(object),
+  nMargLikSamples = NULL,
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{object}{valid \code{GlmBayesMfp} object containing the models over
@@ -64,4 +70,3 @@ included in the BMA sample or not.
 }
 \keyword{models}
 \keyword{regression}
-

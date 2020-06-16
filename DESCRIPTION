@@ -5,7 +5,7 @@ License: GPL (>= 2)
 Title: Bayesian Fractional Polynomials for GLMs
 LinkingTo: Rcpp, RcppArmadillo
 LazyLoad: yes
-Authors@R: c(person("Isaac","Gravestock", role=c("aut","cre"), email="isaac.gravestock@uzh.ch"),
+Authors@R: c(person("Isaac","Gravestock", role=c("aut","cre"), email="isaac.gravestock@gmail.com"),
             person("Daniel","Sabanes Bove", role="aut"),
             person("David","Maisonave", role="ctb"),
             person("Terry","Therneau", role="ctb"),
@@ -16,8 +16,8 @@ Description: Implements the Bayesian paradigm
     models, described by Held, Gravestock, Sabanes Bove (2015) <doi:10.1214/14-STS510>.
     See package 'bfp' for the treatment of normal
     models.
-Version: 0.0-51
-Date: 2017-07-31
+Version: 0.0-60
+Date: 2020-06-12
 Depends: R (>= 2.12.0)
 Encoding: UTF-8
 Suggests: MASS
@@ -32,17 +32,14 @@ Collate: 'GPrior-classes.R' 'posteriors.R' 'GlmBayesMfp-methods.R'
         'glmBayesMfp.R' 'glmBfp-package.R' 'hpds.R' 'inclusionProbs.R'
         'optimize.R' 'plotCurveEstimate.R' 'predictCoxTBF.R'
         'testCox.R' 'uncenteredDesignMatrix.R' 'writeFormula.R'
-RoxygenNote: 5.0.1
+RoxygenNote: 7.1.0
 Author: Isaac Gravestock [aut, cre],
   Daniel Sabanes Bove [aut],
   David Maisonave [ctb],
   Terry Therneau [ctb],
   R Core Team [ctb]
-Maintainer: Isaac Gravestock <isaac.gravestock@uzh.ch>
+Maintainer: Isaac Gravestock <isaac.gravestock@gmail.com>
 Repository: CRAN
-Repository/R-Forge/Project: bfp
-Repository/R-Forge/Revision: 144
-Repository/R-Forge/DateTimeStamp: 2017-08-03 06:51:05
-Date/Publication: 2017-08-03 09:55:53 UTC
 NeedsCompilation: yes
-Packaged: 2017-08-03 07:13:36 UTC; rforge
+Packaged: 2020-06-12 14:21:15 UTC; gravesti
+Date/Publication: 2020-06-16 14:10:15 UTC

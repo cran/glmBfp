@@ -4,8 +4,10 @@
 \alias{inclusionProbs}
 \title{Compute posterior inclusion probabilites based on GlmBayesMfp object}
 \usage{
-inclusionProbs(GlmBayesMfpObject, postProbs = posteriors(GlmBayesMfpObject,
-  type = "normalized"))
+inclusionProbs(
+  GlmBayesMfpObject,
+  postProbs = posteriors(GlmBayesMfpObject, type = "normalized")
+)
 }
 \arguments{
 \item{GlmBayesMfpObject}{the GlmBayesMfp object}
@@ -21,4 +23,3 @@ Compute (model averaged) posterior inclusion probabilites for the uncertain
 variables (including FP variables) based on a GlmBayesMfp object.
 }
 \keyword{utilities}
-

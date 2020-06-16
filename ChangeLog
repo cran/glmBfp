@@ -1,3 +1,7 @@
+2020-06-12 Isaac Gravestock <isaac.gravestock@gmail.com>
+
+ * Fix Fortran calls
+
 2015-07-02 Isaac Gravestock <isaac.gravestock@uzh.ch>
 
  * Fixed comilation bug due to reusing memory and constant vectors.

@@ -4,8 +4,16 @@
 \alias{plotCurveEstimate}
 \title{Function for plotting a fractional polynomial curve estimate}
 \usage{
-plotCurveEstimate(samples, termName, plevel = 0.95, slevel = plevel,
-  plot = TRUE, rug = FALSE, addZeros = FALSE, ...)
+plotCurveEstimate(
+  samples,
+  termName,
+  plevel = 0.95,
+  slevel = plevel,
+  plot = TRUE,
+  rug = FALSE,
+  addZeros = FALSE,
+  ...
+)
 }
 \arguments{
 \item{samples}{an object of class \code{\linkS4class{GlmBayesMfpSamples}},
@@ -53,4 +61,3 @@ Plot a fractional polynomial curve estimate using samples from a single
 GLM / Cox model or a model average.
 }
 \keyword{regression}
-

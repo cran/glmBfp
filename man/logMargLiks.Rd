@@ -16,4 +16,3 @@ the vector of log marginal likelihood estimates
 Extract the log marginal likelihood estimates from a GlmBayesMfp object
 }
 \keyword{utilities}
-

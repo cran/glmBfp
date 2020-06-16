@@ -18,11 +18,10 @@ The subsetted object.
 \description{
 Extract a subset of models from a \code{\link{GlmBayesMfp}} object.
 }
-\author{
-Daniel Sabanes Bove \email{daniel.sabanesbove@ifspm.uzh.ch}
-}
 \seealso{
 \code{\link{glmBayesMfp}}
 }
+\author{
+Daniel Sabanes Bove \email{daniel.sabanesbove@ifspm.uzh.ch}
+}
 \keyword{methods}
-

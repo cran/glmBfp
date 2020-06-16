@@ -19,4 +19,3 @@ the requested probs from all models
 Extract posterior model probability estimates from a GlmBayesMfp object
 }
 \keyword{utilities}
-

@@ -18,4 +18,3 @@ It is checked that the result is valid, that is that exp(f) integrates to 1 over
 positive real line.
 }
 \keyword{internal}
-
